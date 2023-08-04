@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE resources PUBLIC "-//Payara.fish//DTD Payara Server 4 Resource Definitions//EN" "https://raw.githubusercontent.com/payara/Payara-Enterprise-Documentation/master/docs/modules/ROOT/pages/schemas/payara-resources_1_6.dtd">
+<resources>
+	<jdbc-connection-pool
+		datasource-classname="com.mysql.cj.jdbc.MysqlConnectionPoolDataSource"
+		name="acmecollegeDB" res-type="javax.sql.DataSource">
+		<property name="databaseName" value="acmecollege"></property>
+		<property name="serverName" value="localhost"></property>
+		<property name="user" value="cst8277"></property>
+		<property name="password" value="8277"></property>
+		<property name="portNumber" value="3306"></property>
+		<property name="useSSL" value="false"></property>
+		<property name="allowPublicKeyRetrieval" value="true"></property>
+		<property name="createDatabaseIfNotExist" value="true"></property>
+	</jdbc-connection-pool>
+	<jdbc-resource
+		jndi-name="java:app/jdbc/acmecollege"
+		pool-name="acmecollegeDB">
+		<description>DataSource for ACME College</description>
+	</jdbc-resource>
+</resources>

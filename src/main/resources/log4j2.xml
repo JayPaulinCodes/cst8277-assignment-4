@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="warn">
+    <Properties>
+        <Property name="log-path">PropertiesConfiguration</Property>
+    </Properties>
+    <Appenders>
+        <Console name="Console-Appender" target="SYSTEM_OUT">
+            <PatternLayout pattern="%highlight{%36.36c | %msg%throwable}" />
+        </Console>
+    </Appenders>
+    
+    <Loggers>
+        <!-- Log everything in hibernate -->
+        <Logger name="org.hibernate" level="info" additivity="false">
+            <AppenderRef ref="Console-Appender" />
+        </Logger>
+        <Logger name="org.hibernate.SQL" level="debug" additivity="false">
+            <AppenderRef ref="Console-Appender" />
+        </Logger>
+        
+        <Logger name="acmecollege" level="debug" additivity="false">
+            <AppenderRef ref="Console-Appender" />
+        </Logger>
+
+        <!-- default logging should only warn us -->
+        <Root level="warn">
+            <AppenderRef ref="Console-Appender" />
+        </Root>
+    </Loggers>
+</Configuration>

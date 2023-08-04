@@ -1,0 +1,52 @@
+openapi: 3.0.0
+info:
+  description: "This is a REST ACMECollege Demo"
+  version: "1.0.0"
+  title: "(23W) REST ACMECollege Demo"
+  contact:
+    name: (23W) CST 8277
+    email: yapt@algonquincollege.com
+    url: https://brightspace.algonquincollege.com/d2l/home/468968
+
+servers:
+  - url: 'http://localhost:{port}/{contextRoot}/{basePath}'
+    variables:
+      contextRoot:
+         default: 'rest-acmecollege'
+      basePath:
+        default: 'api/v1'
+      port:
+        default: '8080'
+ 
+security:
+  - basicAuth: []
+
+components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+  responses:
+    UnauthorizedAdminError:
+      description: request requires HTTP authentication for ADMIN_ROLE
+    UnauthorizedUserError:
+      description: request requires HTTP authentication for USER_ROLE
+
+paths:
+  /person:
+    get:
+      responses:
+        200:
+          description: OK
+          
+  /person/{id}:
+    get:
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      responses:
+        200:      
+          description: OK
