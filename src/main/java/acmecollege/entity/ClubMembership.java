@@ -5,37 +5,40 @@
  * @author Shariar (Shawn) Emami
  * @date August 28, 2022
  * 
- * Updated by:  Group NN
- *   studentId, firstName, lastName (as from ACSIS)
- *   studentId, firstName, lastName (as from ACSIS)
- *   studentId, firstName, lastName (as from ACSIS)
- *   studentId, firstName, lastName (as from ACSIS)
- * 
+ * Updated by:  Group 40
+ *   41024610, Jacob, Paulin
+ *   12345678, Taeung, Park 
+ *   12345678, Doyoung, Kim 
+ *   12345678, Dawon, Jun 
  */
 package acmecollege.entity;
 
 import java.io.Serializable;
 import java.util.Objects;
 
-import javax.persistence.Embedded;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 
 @SuppressWarnings("unused")
 
 /**
  * The persistent class for the club_membership database table.
  */
-//TODO CM01 - Add the missing annotations.
-//TODO CM02 - Do we need a mapped super class?  If so, which one?
+@Entity
+@Table(name = "club_membership")
+@NamedQuery(name = ClubMembership.FIND_ALL, query = "SELECT cm FROM ClubMembership cm")
+@NamedQuery( name = ClubMembership.FIND_BY_ID, query = "SELECT cm FROM ClubMembership cm where cm.id = :param1")
+@AttributeOverride(name = "id", column = @Column(name = "membership_id"))
 public class ClubMembership extends PojoBase implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	// TODO CM03 - Add annotations for M:1.  Changes to this class should cascade to StudentClub.
+	public static final String FIND_ALL = "ClubMembership.findAll";
+	public static final String FIND_BY_ID = "ClubMembership.findbyId";
+
+	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@JoinColumn(name = "club_id", referencedColumnName = "club_id")
 	private StudentClub club;
 
-	// TODO CM04 - Add annotations for 1:1.  Changes to this class should not cascade to MembershipCard.
+	@OneToOne(mappedBy = "clubMembership")
 	private MembershipCard card;
 
 	@Embedded

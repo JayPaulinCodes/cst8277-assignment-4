@@ -5,18 +5,20 @@
  * @author Shariar (Shawn) Emami
  * @date August 28, 2022
  * 
- * Updated by:  Group NN
- *   studentId, firstName, lastName (as from ACSIS)
- *   studentId, firstName, lastName (as from ACSIS)
- *   studentId, firstName, lastName (as from ACSIS)
- *   studentId, firstName, lastName (as from ACSIS)
- * 
+ * Updated by:  Group 40
+ *   41024610, Jacob, Paulin
+ *   12345678, Taeung, Park 
+ *   12345678, Doyoung, Kim 
+ *   12345678, Dawon, Jun 
  */
 package acmecollege.entity;
 
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
 import java.io.Serializable;
 
-//TODO ASC01 - Add missing annotations, please see Week 9 slides page 15.  Value 1 is academic and value 0 is non-academic.
+@Entity
+@DiscriminatorValue(value = "1")
 public class AcademicStudentClub extends StudentClub implements Serializable {
 	private static final long serialVersionUID = 1L;
 

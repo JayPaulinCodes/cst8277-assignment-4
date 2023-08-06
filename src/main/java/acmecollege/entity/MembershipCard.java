@@ -14,6 +14,7 @@
  */
 package acmecollege.entity;
 
+import javax.persistence.*;
 import java.io.Serializable;
 
 @SuppressWarnings("unused")
@@ -21,18 +22,27 @@ import java.io.Serializable;
 /**
  * The persistent class for the membership_card database table.
  */
-//TODO MC01 - Add the missing annotations.
-//TODO MC02 - Do we need a mapped super class?  If so, which one?
+@Entity
+@Table(name = "membership_card")
+@NamedQuery(name = MembershipCard.ALL_CARDS_QUERY_NAME, query = "SELECT mc FROM MembershipCard mc")
+@NamedQuery(name = MembershipCard.ID_CARD_QUERY_NAME, query = "SELECT mc FROM MembershipCard mc where mc.id = :param1")
+@AttributeOverride(name = "id", column = @Column(name = "card_id"))
 public class MembershipCard extends PojoBase implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	// TODO MC03 - Add annotations for 1:1 mapping.  Changes here should cascade.
+	public static final String ALL_CARDS_QUERY_NAME = "MembershipCard.findAll";
+	public static final String ID_CARD_QUERY_NAME = "MembershipCard.findById";
+
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JoinColumn(name="membership_id", referencedColumnName = "membership_id")
 	private ClubMembership clubMembership;
 
-	// TODO MC04 - Add annotations for M:1 mapping.  Changes here should not cascade.
+	@ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
+	@JoinColumn(name = "student_id", referencedColumnName = "id", nullable = false)
 	private Student owner;
 
-	// TODO MC05 - Add annotations.
+	@Basic(optional = false)
+	@Column(name="signed", columnDefinition = "BIT(1)", nullable = false)
 	private byte signed;
 
 	public MembershipCard() {

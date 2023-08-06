@@ -5,12 +5,11 @@
  * @author Shariar (Shawn) Emami
  * @date August 28, 2022
  * 
- * Updated by:  Group NN
- *   studentId, firstName, lastName (as from ACSIS)
- *   studentId, firstName, lastName (as from ACSIS)
- *   studentId, firstName, lastName (as from ACSIS)
- *   studentId, firstName, lastName (as from ACSIS)
- * 
+ * Updated by:  Group 40
+ *   41024610, Jacob, Paulin
+ *   12345678, Taeung, Park 
+ *   12345678, Doyoung, Kim 
+ *   12345678, Dawon, Jun 
  */
 package acmecollege.entity;
 
@@ -19,27 +18,50 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.Basic;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 /**
  * The persistent class for the student_club database table.
  */
-//TODO SC01 - Add the missing annotations.
-//TODO SC02 - StudentClub has subclasses AcademicStudentClub and NonAcademicStudentClub.  Look at week 9 slides for InheritanceType.
-//TODO SC03 - Do we need a mapped super class?  If so, which one?
+@Entity
+@Table(name = "student_club")
+@AttributeOverride(name="id", column=@Column(name = "club_id"))
+@NamedQuery(name = StudentClub.ALL_STUDENT_CLUBS_QUERY_NAME, query = "SELECT distinct sc FROM StudentClub sc")
+@NamedQuery(name = StudentClub.SPECIFIC_STUDENT_CLUB_QUERY_NAME, query = "SELECT distinct sc FROM StudentClub sc where sc.id = :param1")
+@NamedQuery(name = StudentClub.IS_DUPLICATE_QUERY_NAME, query = "SELECT count(sc) FROM StudentClub sc where sc.name = :param1")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(columnDefinition = "bit(1)", name = "academic", discriminatorType = DiscriminatorType.INTEGER)
 //TODO SC06 - Add in JSON annotations to indicate different sub-classes of StudentClub
 public abstract class StudentClub extends PojoBase implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	// TODO SC04 - Add the missing annotations.
+	public static final String ALL_STUDENT_CLUBS_QUERY_NAME = "StudentClub.findAll";
+	public static final String SPECIFIC_STUDENT_CLUB_QUERY_NAME = "StudentClub.findByName";
+	public static final String IS_DUPLICATE_QUERY_NAME = "StudentClub.isDuplicate";
+
+	@Basic(optional = false)
+	@Column(name = "name", nullable = false, length = 100)
 	private String name;
 
-	// TODO SC05 - Add the 1:M annotation.  This list should be effected by changes to this object (cascade).
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "club", orphanRemoval = true)
 	private Set<ClubMembership> clubMemberships = new HashSet<>();
 
-    @Transient
-    private boolean isAcademic;
+	@Transient
+	private boolean isAcademic;
 
 	public StudentClub() {
 		super();
