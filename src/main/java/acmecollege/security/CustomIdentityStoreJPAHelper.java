@@ -4,12 +4,11 @@
  * @author Teddy Yap
  * @author Mike Norman
  * 
- * Updated by:  Group NN
- *   studentId, firstName, lastName (as from ACSIS)
- *   studentId, firstName, lastName (as from ACSIS)
- *   studentId, firstName, lastName (as from ACSIS)
- *   studentId, firstName, lastName (as from ACSIS)
- * 
+ * Updated by:  Group 40
+ *   41024610, Jacob, Paulin
+ *   12345678, Taeung, Park 
+ *   12345678, Doyoung, Kim 
+ *   12345678, Dawon, Jun 
  */
 package acmecollege.security;
 
