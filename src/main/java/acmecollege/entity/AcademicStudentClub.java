@@ -14,9 +14,12 @@
  */
 package acmecollege.entity;
 
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
 import java.io.Serializable;
 
-//TODO ASC01 - Add missing annotations, please see Week 9 slides page 15.  Value 1 is academic and value 0 is non-academic.
+@Entity
+@DiscriminatorValue(value = "1")
 public class AcademicStudentClub extends StudentClub implements Serializable {
 	private static final long serialVersionUID = 1L;
 
