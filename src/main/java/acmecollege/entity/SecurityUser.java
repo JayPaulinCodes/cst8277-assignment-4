@@ -32,6 +32,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import static acmecollege.entity.SecurityUser.SECURITY_USER_BY_ID_QUERY;
 import static acmecollege.entity.SecurityUser.SECURITY_USER_BY_NAME_QUERY;
 
 @SuppressWarnings("unused")
@@ -39,17 +40,19 @@ import static acmecollege.entity.SecurityUser.SECURITY_USER_BY_NAME_QUERY;
 /**
  * User class used for (JSR-375) Java EE Security authorization/authentication
  */
-
-//TODO - Make this into JPA entity and add all the necessary annotations
 @Entity
 @Table(name = "security_user")
 @NamedQuery(
         name = SECURITY_USER_BY_NAME_QUERY,
         query = "SELECT u FROM SecurityUser u left join fetch u.student WHERE u.username = :param1")
+@NamedQuery(
+        name = SECURITY_USER_BY_ID_QUERY,
+        query = "SELECT u FROM SecurityUser u left join fetch u.student WHERE u.id = :param1")
 public class SecurityUser implements Serializable, Principal {
     /** Explicit set serialVersionUID */
     private static final long serialVersionUID = 1L;
     public static final String SECURITY_USER_BY_NAME_QUERY = "SecurityUser.userByName";
+    public static final String SECURITY_USER_BY_ID_QUERY = "SecurityUser.userById";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

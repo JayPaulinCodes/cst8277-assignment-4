@@ -14,6 +14,9 @@
  */
 package acmecollege.ejb;
 
+import static acmecollege.entity.SecurityRole.SECURITY_ROLE_BY_NAME_QUERY_NAME;
+import static acmecollege.entity.SecurityUser.SECURITY_USER_BY_ID_QUERY;
+import static acmecollege.entity.SecurityUser.SECURITY_USER_BY_NAME_QUERY;
 import static acmecollege.entity.StudentClub.ALL_STUDENT_CLUBS_QUERY_NAME;
 import static acmecollege.entity.StudentClub.SPECIFIC_STUDENT_CLUB_QUERY_NAME;
 import static acmecollege.entity.StudentClub.IS_DUPLICATE_QUERY_NAME;
@@ -111,7 +114,9 @@ public class ACMECollegeService implements Serializable {
         String pwHash = pbAndjPasswordHash.generate(DEFAULT_USER_PASSWORD.toCharArray());
         userForNewStudent.setPwHash(pwHash);
         userForNewStudent.setStudent(newStudent);
-        SecurityRole userRole = /* TODO ACMECS01 - Use NamedQuery on SecurityRole to find USER_ROLE */ null;
+        SecurityRole userRole = em.createNamedQuery(SECURITY_ROLE_BY_NAME_QUERY_NAME, SecurityRole.class)
+                .setParameter(PARAM1, USER_ROLE)
+                .getSingleResult();
         userForNewStudent.getRoles().add(userRole);
         userRole.getUsers().add(userForNewStudent);
         em.persist(userForNewStudent);
@@ -170,11 +175,8 @@ public class ACMECollegeService implements Serializable {
         Student student = getStudentById(id);
         if (student != null) {
             em.refresh(student);
-            TypedQuery<SecurityUser> findUser = 
-                /* TODO ACMECS02 - Use NamedQuery on SecurityRole to find this related Student
-                   so that when we remove it, the relationship from SECURITY_USER table
-                   is not dangling
-                */ null;
+            TypedQuery<SecurityUser> findUser = em.createNamedQuery(SECURITY_USER_BY_ID_QUERY, SecurityUser.class)
+                    .setParameter(PARAM1, id);
             SecurityUser sUser = findUser.getSingleResult();
             em.remove(sUser);
             em.remove(student);

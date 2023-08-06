@@ -20,6 +20,8 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import static acmecollege.entity.SecurityRole.SECURITY_ROLE_BY_NAME_QUERY_NAME;
+
 @SuppressWarnings("unused")
 
 /**
@@ -28,9 +30,13 @@ import java.util.Set;
 
 @Entity
 @Table(name = "security_role")
+@NamedQuery(
+        name = SECURITY_ROLE_BY_NAME_QUERY_NAME,
+        query = "SELECT sr FROM SecurityRole sr WHERE sr.roleName = :param1")
 public class SecurityRole implements Serializable {
     /** Explicit set serialVersionUID */
     private static final long serialVersionUID = 1L;
+    public static final String SECURITY_ROLE_BY_NAME_QUERY_NAME = "SecurityRole.findByName";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
