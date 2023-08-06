@@ -8,7 +8,7 @@
  * Updated by:  Group 40
  *   41024610, Jacob, Paulin
  *   12345678, Taeung, Park 
- *   12345678, Doyoung, Kim 
+ *   041065803, Doyoung, Kim 
  *   12345678, Dawon, Jun 
  */
 package acmecollege.entity;
@@ -101,6 +101,7 @@ public class SecurityUser implements Serializable, Principal {
     }
 
     // TODO SU01 - Setup custom JSON serializer
+
     public Set<SecurityRole> getRoles() {
         return roles;
     }
