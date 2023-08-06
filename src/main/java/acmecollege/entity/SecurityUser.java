@@ -55,7 +55,7 @@ public class SecurityUser implements Serializable, Principal {
     protected Student student;
 
     @ManyToMany(cascade = {CascadeType.PERSIST})
-    @JoinTable(name = "users_have_roles",
+    @JoinTable(name = "user_has_role",
             joinColumns = @JoinColumn(referencedColumnName = "user_id", name = "user_id"), // this entity, which is SecurityUser
             inverseJoinColumns = @JoinColumn(referencedColumnName = "role_id", name = "role_id")) // the other entity, which is SecurityRole
     protected Set<SecurityRole> roles = new HashSet<SecurityRole>();
