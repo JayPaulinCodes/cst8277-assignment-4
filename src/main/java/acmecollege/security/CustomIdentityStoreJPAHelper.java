@@ -4,15 +4,15 @@
  * @author Teddy Yap
  * @author Mike Norman
  * 
- * Updated by:  Group NN
- *   studentId, firstName, lastName (as from ACSIS)
- *   studentId, firstName, lastName (as from ACSIS)
- *   studentId, firstName, lastName (as from ACSIS)
- *   studentId, firstName, lastName (as from ACSIS)
- * 
+ * Updated by:  Group 40
+ *   41024610, Jacob, Paulin
+ *   12345678, Taeung, Park 
+ *   12345678, Doyoung, Kim 
+ *   12345678, Dawon, Jun 
  */
 package acmecollege.security;
 
+import static acmecollege.entity.SecurityUser.SECURITY_USER_BY_NAME_QUERY;
 import static acmecollege.utility.MyConstants.PARAM1;
 import static acmecollege.utility.MyConstants.PU_NAME;
 
@@ -56,6 +56,12 @@ public class CustomIdentityStoreJPAHelper {
          *         requests will fail, none of the REST'ful endpoints will work.
          *  
          */
+        try {
+            TypedQuery<SecurityUser> query = em.createNamedQuery(SECURITY_USER_BY_NAME_QUERY, SecurityUser.class);
+            query.setParameter(PARAM1, username);
+            user = query.getSingleResult();
+        } catch (NoResultException e) {}
+
         return user;
     }
 

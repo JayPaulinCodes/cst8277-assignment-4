@@ -14,6 +14,7 @@
  */
 package acmecollege.entity;
 
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Objects;
@@ -24,15 +25,22 @@ import java.util.Set;
 /**
  * Role class used for (JSR-375) Java EE Security authorization/authentication
  */
-//TODO SR01 - Make this into JPA entity and add all necessary annotations
+
+@Entity
+@Table(name = "security_role")
 public class SecurityRole implements Serializable {
     /** Explicit set serialVersionUID */
     private static final long serialVersionUID = 1L;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "role_id", nullable = false)
     protected int id;
-    
+
+    @Column(name = "name", nullable = false, length = 45)
     protected String roleName;
-    
+
+    @ManyToMany(mappedBy = "roles")
     protected Set<SecurityUser> users = new HashSet<SecurityUser>();
 
     public SecurityRole() {

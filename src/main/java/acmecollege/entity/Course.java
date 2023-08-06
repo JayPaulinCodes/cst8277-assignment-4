@@ -5,15 +5,15 @@
  * @author Shariar (Shawn) Emami
  * @date August 28, 2022
  * 
- * Updated by:  Group NN
- *   studentId, firstName, lastName (as from ACSIS)
- *   studentId, firstName, lastName (as from ACSIS)
- *   studentId, firstName, lastName (as from ACSIS)
- *   studentId, firstName, lastName (as from ACSIS)
- * 
+ * Updated by:  Group 40
+ *   41024610, Jacob, Paulin
+ *   12345678, Taeung, Park 
+ *   12345678, Doyoung, Kim 
+ *   12345678, Dawon, Jun 
  */
 package acmecollege.entity;
 
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -23,30 +23,40 @@ import java.util.Set;
 /**
  * The persistent class for the course database table.
  */
-//TODO CO01 - Add the missing annotations.
-//TODO CO02 - Do we need a mapped super class?  If so, which one?
+@Entity
+@Table(name = "course")
+@NamedQuery(name = Course.ALL_COURSES_QUERY, query = "SELECT c FROM Course c")
+@AttributeOverride(name = "id", column = @Column(name = "course_id"))
 public class Course extends PojoBase implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	// TODO CO03 - Add missing annotations.
+	public static final String ALL_COURSES_QUERY = "Course.findAll";
+
+	@Basic(optional = false)
+	@Column(name = "course_code", nullable = false, length = 7)
 	private String courseCode;
 
-	// TODO CO04 - Add missing annotations.
+	@Basic(optional = false)
+	@Column(name = "course_title", nullable = false, length = 100)
 	private String courseTitle;
 
-	// TODO CO05 - Add missing annotations.
+	@Basic(optional = false)
+	@Column(name = "year",  nullable = false)
 	private int year;
 
-	// TODO CO06 - Add missing annotations.
+	@Basic(optional = false)
+	@Column(name = "semester",  nullable = false, length = 6)
 	private String semester;
 
-	// TODO CO07 - Add missing annotations.
+	@Basic(optional = false)
+	@Column(name = "credit_units",  nullable = false)
 	private int creditUnits;
 
-	// TODO CO08 - Add missing annotations.
+	@Basic(optional = false)
+	@Column(name = "online",  nullable = false)
 	private byte online;
 
-	// TODO CO09 - Add annotations for 1:M relation.  Changes to this class should not cascade.
+	@OneToMany(cascade = CascadeType.MERGE, fetch = FetchType.LAZY, mappedBy = "course")
 	private Set<CourseRegistration> courseRegistrations = new HashSet<>();
 
 	public Course() {
