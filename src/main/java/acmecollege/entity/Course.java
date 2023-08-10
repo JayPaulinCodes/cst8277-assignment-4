@@ -13,6 +13,9 @@
  */
 package acmecollege.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.HashSet;
@@ -26,11 +29,13 @@ import java.util.Set;
 @Entity
 @Table(name = "course")
 @NamedQuery(name = Course.ALL_COURSES_QUERY, query = "SELECT c FROM Course c")
+@NamedQuery(name = Course.GET_COURSE_BY_ID_QUERY, query = "SELECT c FROM Course c WHERE c.id = :param1")
 @AttributeOverride(name = "id", column = @Column(name = "course_id"))
 public class Course extends PojoBase implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	public static final String ALL_COURSES_QUERY = "Course.findAll";
+	public static final String GET_COURSE_BY_ID_QUERY = "Course.findById";
 
 	@Basic(optional = false)
 	@Column(name = "course_code", nullable = false, length = 7)
@@ -130,7 +135,8 @@ public class Course extends PojoBase implements Serializable {
 	public void setOnline(byte online) {
 		this.online = online;
 	}
-	
+
+	@JsonManagedReference(value = "courseRegistration-course-backref")
 	public Set<CourseRegistration> getCourseRegistrations() {
 		return courseRegistrations;
 	}

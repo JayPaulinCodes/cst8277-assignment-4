@@ -9,6 +9,9 @@
  */
 package acmecollege.security;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import static javax.security.enterprise.identitystore.CredentialValidationResult.Status.VALID;
 import static javax.servlet.http.HttpServletRequest.BASIC_AUTH;
 

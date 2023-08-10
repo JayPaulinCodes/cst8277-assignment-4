@@ -14,6 +14,7 @@
 package acmecollege.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import java.io.Serializable;
 import java.util.HashSet;
@@ -149,7 +150,7 @@ public class Professor extends PojoBase implements Serializable {
 		this.specialization = specialization;
 	}
 
-	@JsonBackReference
+	@JsonManagedReference(value = "courseRegistration-professor-backref")
 	public Set<CourseRegistration> getCourseRegistrations() {
 		return courseRegistrations;
 	}

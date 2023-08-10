@@ -14,6 +14,7 @@
  */
 package acmecollege.ejb;
 
+import static acmecollege.entity.CourseRegistration_.professor;
 import static acmecollege.entity.SecurityRole.SECURITY_ROLE_BY_NAME_QUERY_NAME;
 import static acmecollege.entity.SecurityUser.*;
 import static acmecollege.entity.StudentClub.ALL_STUDENT_CLUBS_QUERY_NAME;
@@ -53,17 +54,9 @@ import javax.persistence.criteria.Root;
 import javax.security.enterprise.identitystore.Pbkdf2PasswordHash;
 import javax.transaction.Transactional;
 
+import acmecollege.entity.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import acmecollege.entity.ClubMembership;
-import acmecollege.entity.CourseRegistration;
-import acmecollege.entity.MembershipCard;
-import acmecollege.entity.Professor;
-import acmecollege.entity.SecurityRole;
-import acmecollege.entity.SecurityUser;
-import acmecollege.entity.Student;
-import acmecollege.entity.StudentClub;
 
 @SuppressWarnings("unused")
 
@@ -294,6 +287,15 @@ public class ACMECollegeService implements Serializable {
         if (professor != null) {
             em.refresh(professor);
             em.remove(professor);
+        }
+    }
+
+    @Transactional
+    public void deleteCourseById(int id) {
+        Course course = getById(Course.class, Course.GET_COURSE_BY_ID_QUERY, id);
+        if (course != null) {
+            em.refresh(course);
+            em.remove(course);
         }
     }
     

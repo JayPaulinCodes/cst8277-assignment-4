@@ -93,6 +93,7 @@ public class CourseRegistration extends PojoBaseCompositeKey<CourseRegistrationP
 		this.student = student;
 	}
 
+	@JsonBackReference(value = "courseRegistration-course-backref")
 	public Course getCourse() {
 		return course;
 	}
@@ -102,7 +103,7 @@ public class CourseRegistration extends PojoBaseCompositeKey<CourseRegistrationP
 		this.course = course;
 	}
 
-	@JsonBackReference
+	@JsonBackReference(value = "courseRegistration-professor-backref")
 	public Professor getProfessor() {
 		return professor;
 	}
