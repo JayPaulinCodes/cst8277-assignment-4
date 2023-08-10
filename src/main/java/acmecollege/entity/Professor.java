@@ -13,6 +13,8 @@
  */
 package acmecollege.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Objects;
@@ -44,7 +46,9 @@ import javax.persistence.Transient;
 //Hint - @NamedQuery attached to this class which uses JPQL/HQL.  SQL cannot be used with NamedQuery.
 //Hint - @NamedQuery uses the name which is defined in @Entity for JPQL, if no name is defined use class name.
 //Hint - @NamedNativeQuery can optionally be used if there is a need for SQL query.
-@NamedQuery(name = "Professor.findAll", query = "SELECT p FROM Professor p left join fetch p.courseRegistrations")
+//@NamedQuery(name = Professor.GET_ALL_PROFESSORS_QUERY_NAME, query = "SELECT p FROM Professor p")
+@NamedQuery(name = Professor.GET_ALL_PROFESSORS_QUERY_NAME, query = "SELECT p FROM Professor p left join fetch p.courseRegistrations")
+@NamedQuery(name = Professor.GET_PROFESSOR_BY_ID_QUERY_NAME, query = "SELECT p FROM Professor p WHERE p.id = :param1")
 @NamedQuery(name = Professor.IS_DUPLICATE_QUERY_NAME, query = "SELECT count(p) FROM Professor p where p.firstName = :param1 and p.lastName = :param2 and p.department = :param3")
 @NamedQuery(name = Professor.QUERY_PROFESSOR_BY_NAME_DEPARTMENT, query = "SELECT p FROM Professor p where p.firstName = :param1 and p.lastName = :param2 and p.department = :param3")
 //Hint - @AttributeOverride can override column details.  This entity uses professor_id as its primary key name, it needs to override the name in the mapped super class.
@@ -54,7 +58,9 @@ import javax.persistence.Transient;
 public class Professor extends PojoBase implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-    public static final String IS_DUPLICATE_QUERY_NAME = "Professor.isDuplicate";
+	public static final String GET_ALL_PROFESSORS_QUERY_NAME = "Professor.findAll";
+	public static final String GET_PROFESSOR_BY_ID_QUERY_NAME = "Professor.findById";
+	public static final String IS_DUPLICATE_QUERY_NAME = "Professor.isDuplicate";
     public static final String QUERY_PROFESSOR_BY_NAME_DEPARTMENT = "Professor.findByNameDepartment";
 
 	// Hint - @Basic(optional = false) is used when the object cannot be null.
@@ -143,6 +149,7 @@ public class Professor extends PojoBase implements Serializable {
 		this.specialization = specialization;
 	}
 
+	@JsonBackReference
 	public Set<CourseRegistration> getCourseRegistrations() {
 		return courseRegistrations;
 	}

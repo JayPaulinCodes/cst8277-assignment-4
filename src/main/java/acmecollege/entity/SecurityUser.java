@@ -13,6 +13,9 @@
  */
 package acmecollege.entity;
 
+import acmecollege.rest.serializer.SecurityRoleSerializer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 import java.io.Serializable;
 import java.security.Principal;
 import java.util.HashSet;
@@ -92,7 +95,7 @@ public class SecurityUser implements Serializable, Principal {
     }
 
     // TODO SU01 - Setup custom JSON serializer
-
+    @JsonSerialize(using = SecurityRoleSerializer.class)
     public Set<SecurityRole> getRoles() {
         return roles;
     }

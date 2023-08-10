@@ -14,6 +14,8 @@
  */
 package acmecollege.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -100,6 +102,7 @@ public class CourseRegistration extends PojoBaseCompositeKey<CourseRegistrationP
 		this.course = course;
 	}
 
+	@JsonBackReference
 	public Professor getProfessor() {
 		return professor;
 	}

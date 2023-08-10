@@ -212,6 +212,11 @@ public class ACMECollegeService implements Serializable {
         return allQuery.getSingleResult();
     }
 
+    public <T> T persistEntity(Class<T> entity, T newEntity) {
+        em.persist(newEntity);
+        return newEntity;
+    }
+
     @Transactional
     public StudentClub deleteStudentClub(int id) {
         //StudentClub sc = getStudentClubById(id);
@@ -281,6 +286,15 @@ public class ACMECollegeService implements Serializable {
             em.flush();
         }
         return clubMembershipToBeUpdated;
+    }
+
+    @Transactional
+    public void deleteProfessorById(int id) {
+        Professor professor = getById(Professor.class, Professor.GET_PROFESSOR_BY_ID_QUERY_NAME, id);
+        if (professor != null) {
+            em.refresh(professor);
+            em.remove(professor);
+        }
     }
     
 }

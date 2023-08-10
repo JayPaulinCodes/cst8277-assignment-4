@@ -1,5 +1,5 @@
 /**
- * File:  PersonResource.java Course materials (23S) CST 8277
+ * File:  StudentResource.java Course materials (23S) CST 8277
  *
  * @author Teddy Yap
  * @author Shariar (Shawn) Emami
@@ -100,7 +100,7 @@ public class StudentResource {
     }
 
     @DELETE
-    @RolesAllowed({ADMIN_ROLE, USER_ROLE})
+    @RolesAllowed({ADMIN_ROLE})
     @Path(RESOURCE_PATH_ID_PATH)
     public Response deleteStudent(@PathParam(RESOURCE_PATH_ID_ELEMENT) int id) {
         Response response = null;
