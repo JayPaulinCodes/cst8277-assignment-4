@@ -8,15 +8,14 @@
  * 
  * Updated by:  Group 40
  *   41024610, Jacob, Paulin
- *   12345678, Taeung, Park 
+ *   041053188, Taeung, Park 
  *   041065803, Doyoung, Kim 
- *   12345678, Dawon, Jun 
+ *   041053986, Dawon, Jun 
  */
 package acmecollege.ejb;
 
 import static acmecollege.entity.SecurityRole.SECURITY_ROLE_BY_NAME_QUERY_NAME;
-import static acmecollege.entity.SecurityUser.SECURITY_USER_BY_ID_QUERY;
-import static acmecollege.entity.SecurityUser.SECURITY_USER_BY_NAME_QUERY;
+import static acmecollege.entity.SecurityUser.*;
 import static acmecollege.entity.StudentClub.ALL_STUDENT_CLUBS_QUERY_NAME;
 import static acmecollege.entity.StudentClub.SPECIFIC_STUDENT_CLUB_QUERY_NAME;
 import static acmecollege.entity.StudentClub.IS_DUPLICATE_QUERY_NAME;
@@ -175,9 +174,11 @@ public class ACMECollegeService implements Serializable {
         Student student = getStudentById(id);
         if (student != null) {
             em.refresh(student);
-            TypedQuery<SecurityUser> findUser = em.createNamedQuery(SECURITY_USER_BY_ID_QUERY, SecurityUser.class)
+            TypedQuery<SecurityUser> findUser = em.createNamedQuery(SECURITY_USER_BY_STUDENT_ID_QUERY, SecurityUser.class)
                     .setParameter(PARAM1, id);
             SecurityUser sUser = findUser.getSingleResult();
+            sUser.getRoles().clear();
+            sUser.setStudent(null);
             em.remove(sUser);
             em.remove(student);
         }

@@ -7,9 +7,9 @@
  * 
  * Updated by:  Group 40
  *   41024610, Jacob, Paulin
- *   12345678, Taeung, Park 
+ *   041053188, Taeung, Park 
  *   041065803, Doyoung, Kim 
- *   12345678, Dawon, Jun 
+ *   041053986, Dawon, Jun 
  */
 package acmecollege.rest.resource;
 
@@ -26,14 +26,7 @@ import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.inject.Inject;
 import javax.security.enterprise.SecurityContext;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.ForbiddenException;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -97,12 +90,22 @@ public class StudentResource {
 
     @POST
     @RolesAllowed({ADMIN_ROLE})
-    public Response addPerson(Student newStudent) {
+    public Response addStudent(Student newStudent) {
         Response response = null;
         Student newStudentWithIdTimestamps = service.persistStudent(newStudent);
         // Build a SecurityUser linked to the new student
         service.buildUserForNewStudent(newStudentWithIdTimestamps);
         response = Response.ok(newStudentWithIdTimestamps).build();
+        return response;
+    }
+
+    @DELETE
+    @RolesAllowed({ADMIN_ROLE, USER_ROLE})
+    @Path(RESOURCE_PATH_ID_PATH)
+    public Response deleteStudent(@PathParam(RESOURCE_PATH_ID_ELEMENT) int id) {
+        Response response = null;
+        service.deleteStudentById(id);
+        response = Response.status(Status.OK).build();
         return response;
     }
 

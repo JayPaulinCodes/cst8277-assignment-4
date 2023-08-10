@@ -7,9 +7,9 @@
  * 
  * Updated by:  Group 40
  *   41024610, Jacob, Paulin
- *   12345678, Taeung, Park 
+ *   041053188, Taeung, Park 
  *   041065803, Doyoung, Kim 
- *   12345678, Dawon, Jun 
+ *   041053986, Dawon, Jun 
  */
 package acmecollege.entity;
 

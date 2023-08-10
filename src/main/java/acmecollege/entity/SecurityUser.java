@@ -7,9 +7,9 @@
  * 
  * Updated by:  Group 40
  *   41024610, Jacob, Paulin
- *   12345678, Taeung, Park 
+ *   041053188, Taeung, Park 
  *   041065803, Doyoung, Kim 
- *   12345678, Dawon, Jun 
+ *   041053986, Dawon, Jun 
  */
 package acmecollege.entity;
 
@@ -19,21 +19,9 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 
-import static acmecollege.entity.SecurityUser.SECURITY_USER_BY_ID_QUERY;
-import static acmecollege.entity.SecurityUser.SECURITY_USER_BY_NAME_QUERY;
+import static acmecollege.entity.SecurityUser.*;
 
 @SuppressWarnings("unused")
 
@@ -46,13 +34,13 @@ import static acmecollege.entity.SecurityUser.SECURITY_USER_BY_NAME_QUERY;
         name = SECURITY_USER_BY_NAME_QUERY,
         query = "SELECT u FROM SecurityUser u left join fetch u.student WHERE u.username = :param1")
 @NamedQuery(
-        name = SECURITY_USER_BY_ID_QUERY,
-        query = "SELECT u FROM SecurityUser u left join fetch u.student WHERE u.id = :param1")
+        name = SECURITY_USER_BY_STUDENT_ID_QUERY,
+        query = "SELECT u FROM SecurityUser u left join fetch u.student WHERE u.student.id = :param1")
 public class SecurityUser implements Serializable, Principal {
     /** Explicit set serialVersionUID */
     private static final long serialVersionUID = 1L;
     public static final String SECURITY_USER_BY_NAME_QUERY = "SecurityUser.userByName";
-    public static final String SECURITY_USER_BY_ID_QUERY = "SecurityUser.userById";
+    public static final String SECURITY_USER_BY_STUDENT_ID_QUERY = "SecurityUser.userByStudentId";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -7,9 +7,9 @@
  * 
  * Updated by:  Group 40
  *   41024610, Jacob, Paulin
- *   12345678, Taeung, Park 
+ *   041053188, Taeung, Park 
  *   041065803, Doyoung, Kim 
- *   12345678, Dawon, Jun 
+ *   041053986, Dawon, Jun 
  */
 package acmecollege.rest.resource;
 
@@ -84,8 +84,8 @@ public class StudentClubResource {
     }
     
     // Please try to understand and test the below methods:
-    @RolesAllowed({ADMIN_ROLE})
     @POST
+    @RolesAllowed({ADMIN_ROLE})
     public Response addStudentClub(StudentClub newStudentClub) {
         LOG.debug("Adding a new student club = {}", newStudentClub);
         if (service.isDuplicated(newStudentClub)) {
@@ -98,8 +98,8 @@ public class StudentClubResource {
         }
     }
 
-    @RolesAllowed({ADMIN_ROLE})
     @POST
+    @RolesAllowed({ADMIN_ROLE})
     @Path("/{studentClubId}/clubmembership")
     public Response addClubMembershipToStudentClub(@PathParam("studentClubId") int scId, ClubMembership newClubMembership) {
         LOG.debug( "Adding a new ClubMembership to student club with id = {}", scId);
@@ -112,8 +112,8 @@ public class StudentClubResource {
         return Response.ok(sc).build();
     }
 
-    @RolesAllowed({ADMIN_ROLE, USER_ROLE})
     @PUT
+    @RolesAllowed({ADMIN_ROLE, USER_ROLE})
     @Path("/{studentClubId}")
     public Response updateStudentClub(@PathParam("studentClubId") int scId, StudentClub updatingStudentClub) {
         LOG.debug("Updating a specific student club with id = {}", scId);
