@@ -14,6 +14,9 @@
  */
 package acmecollege.entity;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 import java.io.Serializable;
 
 import javax.persistence.AttributeOverride;
@@ -39,6 +42,7 @@ import javax.persistence.Table;
 @NamedQuery(name = MembershipCard.ALL_CARDS_QUERY_NAME, query = "SELECT mc FROM MembershipCard mc")
 @NamedQuery(name = MembershipCard.ID_CARD_QUERY_NAME, query = "SELECT mc FROM MembershipCard mc where mc.id = :param1")
 @AttributeOverride(name = "id", column = @Column(name = "card_id"))
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class MembershipCard extends PojoBase implements Serializable {
 	private static final long serialVersionUID = 1L;
 

@@ -13,6 +13,10 @@
  */
 package acmecollege.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -28,6 +32,7 @@ import javax.persistence.*;
 @NamedQuery(name = ClubMembership.FIND_ALL, query = "SELECT cm FROM ClubMembership cm")
 @NamedQuery( name = ClubMembership.FIND_BY_ID, query = "SELECT cm FROM ClubMembership cm where cm.id = :param1")
 @AttributeOverride(name = "id", column = @Column(name = "membership_id"))
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class ClubMembership extends PojoBase implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -48,6 +53,7 @@ public class ClubMembership extends PojoBase implements Serializable {
 		durationAndStatus = new DurationAndStatus();
 	}
 
+	@JsonBackReference(value = "clubMembership-studentClub-backref")
 	public StudentClub getStudentClub() {
 		return club;
 	}

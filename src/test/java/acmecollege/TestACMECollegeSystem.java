@@ -10,13 +10,7 @@
  */
 package acmecollege;
 
-import static acmecollege.utility.MyConstants.APPLICATION_API_VERSION;
-import static acmecollege.utility.MyConstants.APPLICATION_CONTEXT_ROOT;
-import static acmecollege.utility.MyConstants.DEFAULT_ADMIN_USER;
-import static acmecollege.utility.MyConstants.DEFAULT_ADMIN_USER_PASSWORD;
-import static acmecollege.utility.MyConstants.DEFAULT_USER;
-import static acmecollege.utility.MyConstants.DEFAULT_USER_PASSWORD;
-import static acmecollege.utility.MyConstants.STUDENT_RESOURCE_NAME;
+import static acmecollege.utility.MyConstants.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -29,11 +23,14 @@ import java.util.List;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
+import acmecollege.entity.Course;
+import acmecollege.entity.Professor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.client.ClientConfig;
@@ -88,7 +85,7 @@ public class TestACMECollegeSystem {
     }
 
     @Test
-    public void test01_all_students_with_adminrole() throws JsonMappingException, JsonProcessingException {
+    public void test00_all_students_with_adminrole() throws JsonMappingException, JsonProcessingException {
         Response response = webTarget
             //.register(userAuth)
             .register(adminAuth)
@@ -100,4 +97,341 @@ public class TestACMECollegeSystem {
         assertThat(students, is(not(empty())));
         assertThat(students, hasSize(1));
     }
+
+
+
+    @Test
+    public void test01_get_all_students_admin() {
+        Response response = webTarget
+                //.register(userAuth)
+                .register(adminAuth)
+                .path(STUDENT_RESOURCE_NAME)
+                .request()
+                .get();
+        assertThat(response.getStatus(), is(200));
+        System.out.println("Status: " + response.getStatus() + " (" + response.getStatusInfo() + ")");
+    }
+
+    @Test
+    public void test02_get_all_students_user() {
+        Response response = webTarget
+                .register(userAuth)
+//                .register(adminAuth)
+                .path(STUDENT_RESOURCE_NAME)
+                .request()
+                .get();
+        assertThat(response.getStatus(), is(403));
+        System.out.println("Status: " + response.getStatus() + " (" + response.getStatusInfo() + ")");
+    }
+
+    @Test
+    public void test03_get_student_by_id_admin() {
+        Response response = webTarget
+//                .register(userAuth)
+                .register(adminAuth)
+                .path(STUDENT_RESOURCE_NAME+"/1")
+                .request()
+                .get();
+        assertThat(response.getStatus(), is(200));
+        System.out.println("Status: " + response.getStatus() + " (" + response.getStatusInfo() + ")");
+    }
+
+    @Test
+    public void test04_get_student_by_id_user() {
+        Response response = webTarget
+                .register(userAuth)
+//                .register(adminAuth)
+                .path(STUDENT_RESOURCE_NAME+"/2")
+                .request()
+                .get();
+        assertThat(response.getStatus(), is(403));
+        System.out.println("Status: " + response.getStatus() + " (" + response.getStatusInfo() + ")");
+    }
+
+    @Test
+    public void test05_get_own_student_by_id_user() {
+        Response response = webTarget
+                .register(userAuth)
+//                .register(adminAuth)
+                .path(STUDENT_RESOURCE_NAME+"/1")
+                .request()
+                .get();
+        assertThat(response.getStatus(), is(200));
+        System.out.println("Status: " + response.getStatus() + " (" + response.getStatusInfo() + ")");
+    }
+
+    @Test
+    public void test06_post_new_student_admin() {
+        Student dummyStudent = new Student();
+        dummyStudent.setFirstName("Michael");
+        dummyStudent.setLastName("Smith");
+
+        Response response = webTarget
+//                .register(userAuth)
+                .register(adminAuth)
+                .path(STUDENT_RESOURCE_NAME)
+                .request()
+                .post(Entity.json(dummyStudent));
+        assertThat(response.getStatus(), is(200));
+        System.out.println("Status: " + response.getStatus() + " (" + response.getStatusInfo() + ")");
+    }
+
+    @Test
+    public void test07_post_new_student_user() {
+        Student dummyStudent = new Student();
+        dummyStudent.setFirstName("Michael");
+        dummyStudent.setLastName("Smith");
+
+        Response response = webTarget
+                .register(userAuth)
+//                .register(adminAuth)
+                .path(STUDENT_RESOURCE_NAME)
+                .request()
+                .post(Entity.json(dummyStudent));
+        assertThat(response.getStatus(), is(403));
+        System.out.println("Status: " + response.getStatus() + " (" + response.getStatusInfo() + ")");
+    }
+
+    @Test
+    public void test08_delete_student_by_id_admin() {
+        Response response = webTarget
+//                .register(userAuth)
+                .register(adminAuth)
+                .path(STUDENT_RESOURCE_NAME+"/2")
+                .request()
+                .delete();
+        assertThat(response.getStatus(), is(200));
+        System.out.println("Status: " + response.getStatus() + " (" + response.getStatusInfo() + ")");
+    }
+
+    @Test
+    public void test09_delete_student_by_id_user() {
+        Response response = webTarget
+                .register(userAuth)
+//                .register(adminAuth)
+                .path(STUDENT_RESOURCE_NAME+"/2")
+                .request()
+                .delete();
+        assertThat(response.getStatus(), is(403));
+        System.out.println("Status: " + response.getStatus() + " (" + response.getStatusInfo() + ")");
+    }
+
+    @Test
+    public void test10_get_all_professors_admin() {
+        Response response = webTarget
+                //.register(userAuth)
+                .register(adminAuth)
+                .path(PROFESSOR_SUBRESOURCE_NAME)
+                .request()
+                .get();
+        assertThat(response.getStatus(), is(200));
+        System.out.println("Status: " + response.getStatus() + " (" + response.getStatusInfo() + ")");
+    }
+
+    @Test
+    public void test11_get_all_professors_user() {
+        Response response = webTarget
+                .register(userAuth)
+//                .register(adminAuth)
+                .path(PROFESSOR_SUBRESOURCE_NAME)
+                .request()
+                .get();
+        assertThat(response.getStatus(), is(403));
+        System.out.println("Status: " + response.getStatus() + " (" + response.getStatusInfo() + ")");
+    }
+
+    @Test
+    public void test12_get_professor_by_id_admin() {
+        Response response = webTarget
+                //.register(userAuth)
+                .register(adminAuth)
+                .path(PROFESSOR_SUBRESOURCE_NAME+"/1")
+                .request()
+                .get();
+        assertThat(response.getStatus(), is(200));
+        System.out.println("Status: " + response.getStatus() + " (" + response.getStatusInfo() + ")");
+    }
+
+    @Test
+    public void test13_get_professor_by_id_user() {
+        Response response = webTarget
+                .register(userAuth)
+//                .register(adminAuth)
+                .path(PROFESSOR_SUBRESOURCE_NAME+"/1")
+                .request()
+                .get();
+        assertThat(response.getStatus(), is(403));
+        System.out.println("Status: " + response.getStatus() + " (" + response.getStatusInfo() + ")");
+    }
+
+    @Test
+    public void test14_post_new_professor_admin() {
+        Professor dummyProfessor = new Professor();
+        dummyProfessor.setFirstName("Charles");
+        dummyProfessor.setLastName("Xavier");
+        dummyProfessor.setDepartment("Physics");
+
+        Response response = webTarget
+//                .register(userAuth)
+                .register(adminAuth)
+                .path(PROFESSOR_SUBRESOURCE_NAME)
+                .request()
+                .post(Entity.json(dummyProfessor));
+        assertThat(response.getStatus(), is(200));
+        System.out.println("Status: " + response.getStatus() + " (" + response.getStatusInfo() + ")");
+    }
+
+    @Test
+    public void test15_post_new_professor_user() {
+        Professor dummyProfessor = new Professor();
+        dummyProfessor.setFirstName("Charles");
+        dummyProfessor.setLastName("Xavier");
+        dummyProfessor.setDepartment("Physics");
+
+        Response response = webTarget
+                .register(userAuth)
+//                .register(adminAuth)
+                .path(PROFESSOR_SUBRESOURCE_NAME)
+                .request()
+                .post(Entity.json(dummyProfessor));
+        assertThat(response.getStatus(), is(403));
+        System.out.println("Status: " + response.getStatus() + " (" + response.getStatusInfo() + ")");
+    }
+
+    @Test
+    public void test15_delete_professor_by_id_admin() {
+        Response response = webTarget
+//                .register(userAuth)
+                .register(adminAuth)
+                .path(PROFESSOR_SUBRESOURCE_NAME+"/2")
+                .request()
+                .delete();
+        assertThat(response.getStatus(), is(200));
+        System.out.println("Status: " + response.getStatus() + " (" + response.getStatusInfo() + ")");
+    }
+
+    @Test
+    public void test16_delete_professor_by_id_user() {
+        Response response = webTarget
+                .register(userAuth)
+//                .register(adminAuth)
+                .path(PROFESSOR_SUBRESOURCE_NAME+"/2")
+                .request()
+                .delete();
+        assertThat(response.getStatus(), is(403));
+        System.out.println("Status: " + response.getStatus() + " (" + response.getStatusInfo() + ")");
+    }
+
+    @Test
+    public void test17_get_all_courses_admin() {
+        Response response = webTarget
+                //.register(userAuth)
+                .register(adminAuth)
+                .path(COURSE_RESOURCE_NAME)
+                .request()
+                .get();
+        assertThat(response.getStatus(), is(200));
+        System.out.println("Status: " + response.getStatus() + " (" + response.getStatusInfo() + ")");
+    }
+
+    @Test
+    public void test18_get_all_courses_user() {
+        Response response = webTarget
+                .register(userAuth)
+//                .register(adminAuth)
+                .path(COURSE_RESOURCE_NAME)
+                .request()
+                .get();
+        assertThat(response.getStatus(), is(403));
+        System.out.println("Status: " + response.getStatus() + " (" + response.getStatusInfo() + ")");
+    }
+
+    @Test
+    public void test19_get_course_by_id_admin() {
+        Response response = webTarget
+                //.register(userAuth)
+                .register(adminAuth)
+                .path(COURSE_RESOURCE_NAME+"/1")
+                .request()
+                .get();
+        assertThat(response.getStatus(), is(200));
+        System.out.println("Status: " + response.getStatus() + " (" + response.getStatusInfo() + ")");
+    }
+
+    @Test
+    public void test20_get_course_by_id_user() {
+        Response response = webTarget
+                .register(userAuth)
+//                .register(adminAuth)
+                .path(COURSE_RESOURCE_NAME+"/1")
+                .request()
+                .get();
+        assertThat(response.getStatus(), is(403));
+        System.out.println("Status: " + response.getStatus() + " (" + response.getStatusInfo() + ")");
+    }
+
+    @Test
+    public void test21_post_new_course_admin() {
+        Course dummyCourse = new Course();
+        dummyCourse.setCourseCode("CST8101");
+        dummyCourse.setCourseTitle("Computer Essentials");
+        dummyCourse.setYear(2022);
+        dummyCourse.setSemester("WINTER");
+        dummyCourse.setCreditUnits(3);
+        dummyCourse.setOnline((byte) 0);
+
+        Response response = webTarget
+//                .register(userAuth)
+                .register(adminAuth)
+                .path(COURSE_RESOURCE_NAME)
+                .request()
+                .post(Entity.json(dummyCourse));
+        assertThat(response.getStatus(), is(200));
+        System.out.println("Status: " + response.getStatus() + " (" + response.getStatusInfo() + ")");
+    }
+
+    @Test
+    public void test22_post_new_course_user() {
+        Course dummyCourse = new Course();
+        dummyCourse.setCourseCode("CST8101");
+        dummyCourse.setCourseTitle("Computer Essentials");
+        dummyCourse.setYear(2022);
+        dummyCourse.setSemester("WINTER");
+        dummyCourse.setCreditUnits(3);
+        dummyCourse.setOnline((byte) 0);
+
+        Response response = webTarget
+                .register(userAuth)
+//                .register(adminAuth)
+                .path(COURSE_RESOURCE_NAME)
+                .request()
+                .post(Entity.json(dummyCourse));
+        assertThat(response.getStatus(), is(403));
+        System.out.println("Status: " + response.getStatus() + " (" + response.getStatusInfo() + ")");
+    }
+
+    @Test
+    public void test23_delete_course_by_id_admin() {
+        Response response = webTarget
+//                .register(userAuth)
+                .register(adminAuth)
+                .path(COURSE_RESOURCE_NAME+"/3")
+                .request()
+                .delete();
+        assertThat(response.getStatus(), is(200));
+        System.out.println("Status: " + response.getStatus() + " (" + response.getStatusInfo() + ")");
+    }
+
+    @Test
+    public void test24_delete_course_by_id_user() {
+        Response response = webTarget
+                .register(userAuth)
+//                .register(adminAuth)
+                .path(COURSE_RESOURCE_NAME+"/3")
+                .request()
+                .delete();
+        assertThat(response.getStatus(), is(403));
+        System.out.println("Status: " + response.getStatus() + " (" + response.getStatusInfo() + ")");
+    }
+
 }

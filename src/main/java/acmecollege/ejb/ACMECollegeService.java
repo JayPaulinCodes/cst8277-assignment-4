@@ -293,5 +293,14 @@ public class ACMECollegeService implements Serializable {
             em.remove(course);
         }
     }
+
+    @Transactional
+    public void deleteClubMembershipById(int id) {
+        Course course = getById(Course.class, Course.GET_COURSE_BY_ID_QUERY, id);
+        if (course != null) {
+            em.refresh(course);
+            em.remove(course);
+        }
+    }
     
 }
