@@ -70,15 +70,139 @@ public class ACMECollegeService implements Serializable {
     @Inject
     protected Pbkdf2PasswordHash pbAndjPasswordHash;
 
+
+
+
+    /////////////////////////////////////////////////////
+    // ----------[ Generic Methods | Start ]---------- //
+    /////////////////////////////////////////////////////
+    public <T> List<T> getAll(Class<T> entity, String namedQuery) {
+        TypedQuery<T> allQuery = em.createNamedQuery(namedQuery, entity);
+        return allQuery.getResultList();
+    }
+
+    public <T> T getById(Class<T> entity, String namedQuery, int id) {
+        TypedQuery<T> allQuery = em.createNamedQuery(namedQuery, entity);
+        allQuery.setParameter(PARAM1, id);
+        return allQuery.getSingleResult();
+    }
+
+    public <T> T persistEntity(Class<T> entity, T newEntity) {
+        em.persist(newEntity);
+        return newEntity;
+    }
+    ///////////////////////////////////////////////////
+    // ----------[ Generic Methods | End ]---------- //
+    ///////////////////////////////////////////////////
+
+
+
+    ////////////////////////////////////////////////////
+    // ----------[ ClubMembership | Start ]---------- //
+    ////////////////////////////////////////////////////
+    @Transactional
+    public ClubMembership persistClubMembership(ClubMembership newClubMembership) {
+        em.persist(newClubMembership);
+        return newClubMembership;
+    }
+
+    public ClubMembership getClubMembershipById(int cmId) {
+        TypedQuery<ClubMembership> allClubMembershipQuery = em.createNamedQuery(ClubMembership.FIND_BY_ID, ClubMembership.class);
+        allClubMembershipQuery.setParameter(PARAM1, cmId);
+        return allClubMembershipQuery.getSingleResult();
+    }
+
+    @Transactional
+    public ClubMembership updateClubMembership(int id, ClubMembership clubMembershipWithUpdates) {
+        ClubMembership clubMembershipToBeUpdated = getClubMembershipById(id);
+        if (clubMembershipToBeUpdated != null) {
+            em.refresh(clubMembershipToBeUpdated);
+            em.merge(clubMembershipWithUpdates);
+            em.flush();
+        }
+        return clubMembershipToBeUpdated;
+    }
+    
+    @Transactional
+    public void deleteClubMembershipById(int id) {
+        Course course = getById(Course.class, Course.GET_COURSE_BY_ID_QUERY, id);
+        if (course != null) {
+            em.refresh(course);
+            em.remove(course);
+        }
+    }
+    //////////////////////////////////////////////////
+    // ----------[ ClubMembership | End ]---------- //
+    //////////////////////////////////////////////////
+
+
+
+    ////////////////////////////////////////////
+    // ----------[ Course | Start ]---------- //
+    ////////////////////////////////////////////
+    @Transactional
+    public void deleteCourseById(int id) {
+        Course course = getById(Course.class, Course.GET_COURSE_BY_ID_QUERY, id);
+        if (course != null) {
+            em.refresh(course);
+            em.remove(course);
+        }
+    }
+    //////////////////////////////////////////
+    // ----------[ Course | End ]---------- //
+    //////////////////////////////////////////
+
+
+
+    ////////////////////////////////////////////////////////
+    // ----------[ CourseRegistration | Start ]---------- //
+    ////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////
+    // ----------[ CourseRegistration | End ]---------- //
+    //////////////////////////////////////////////////////
+
+
+
+    ////////////////////////////////////////////////////
+    // ----------[ MembershipCard | Start ]---------- //
+    ////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////
+    // ----------[ MembershipCard | End ]---------- //
+    //////////////////////////////////////////////////
+
+
+
+    ///////////////////////////////////////////////
+    // ----------[ Professor | Start ]---------- //
+    ///////////////////////////////////////////////
+    @Transactional
+    public void deleteProfessorById(int id) {
+        Professor professor = getById(Professor.class, Professor.GET_PROFESSOR_BY_ID_QUERY_NAME, id);
+        if (professor != null) {
+            em.refresh(professor);
+            em.remove(professor);
+        }
+    }
+    /////////////////////////////////////////////
+    // ----------[ Professor | End ]---------- //
+    /////////////////////////////////////////////
+
+
+
+    //////////////////////////////////////////////
+    // ----------[ Students | Start ]---------- //
+    //////////////////////////////////////////////
+    public Student getStudentById(int id) {
+        return em.find(Student.class, id);
+    }
+
     public List<Student> getAllStudents() {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Student> cq = cb.createQuery(Student.class);
         cq.select(cq.from(Student.class));
         return em.createQuery(cq).getResultList();
-    }
-
-    public Student getStudentById(int id) {
-        return em.find(Student.class, id);
     }
 
     @Transactional
@@ -91,7 +215,7 @@ public class ACMECollegeService implements Serializable {
     public void buildUserForNewStudent(Student newStudent) {
         SecurityUser userForNewStudent = new SecurityUser();
         userForNewStudent.setUsername(
-            DEFAULT_USER_PREFIX + "_" + newStudent.getFirstName() + "." + newStudent.getLastName());
+                DEFAULT_USER_PREFIX + "_" + newStudent.getFirstName() + "." + newStudent.getLastName() + "." + newStudent.getId());
         Map<String, String> pbAndjProperties = new HashMap<>();
         pbAndjProperties.put(PROPERTY_ALGORITHM, DEFAULT_PROPERTY_ALGORITHM);
         pbAndjProperties.put(PROPERTY_ITERATIONS, DEFAULT_PROPERTY_ITERATIONS);
@@ -109,34 +233,9 @@ public class ACMECollegeService implements Serializable {
         em.persist(userForNewStudent);
     }
 
-    @Transactional
-    public Professor setProfessorForStudentCourse(int studentId, int courseId, Professor newProfessor) {
-        Student studentToBeUpdated = em.find(Student.class, studentId);
-        if (studentToBeUpdated != null) { // Student exists
-            Set<CourseRegistration> courseRegistrations = studentToBeUpdated.getCourseRegistrations();
-            courseRegistrations.forEach(c -> {
-                if (c.getCourse().getId() == courseId) {
-                    if (c.getProfessor() != null) { // Professor exists
-                        Professor prof = em.find(Professor.class, c.getProfessor().getId());
-                        prof.setProfessor(newProfessor.getFirstName(),
-                        				  newProfessor.getLastName(),
-                        				  newProfessor.getDepartment());
-                        em.merge(prof);
-                    }
-                    else { // Professor does not exist
-                        c.setProfessor(newProfessor);
-                        em.merge(studentToBeUpdated);
-                    }
-                }
-            });
-            return newProfessor;
-        }
-        else return null;  // Student doesn't exists
-    }
-
     /**
      * To update a student
-     * 
+     *
      * @param id - id of entity to update
      * @param studentWithUpdates - entity with updated information
      * @return Entity with updated information
@@ -154,7 +253,7 @@ public class ACMECollegeService implements Serializable {
 
     /**
      * To delete a student by id
-     * 
+     *
      * @param id - student id to delete
      */
     @Transactional
@@ -171,7 +270,15 @@ public class ACMECollegeService implements Serializable {
             em.remove(student);
         }
     }
-    
+    ////////////////////////////////////////////
+    // ----------[ Students | End ]---------- //
+    ////////////////////////////////////////////
+
+
+
+    /////////////////////////////////////////////////
+    // ----------[ StudentClub | Start ]---------- //
+    /////////////////////////////////////////////////
     public List<StudentClub> getAllStudentClubs() {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<StudentClub> cq = cb.createQuery(StudentClub.class);
@@ -186,29 +293,29 @@ public class ACMECollegeService implements Serializable {
         specificStudentClubQuery.setParameter(PARAM1, id);
         return specificStudentClubQuery.getSingleResult();
     }
-    
-    // These methods are more generic.
 
-    public <T> List<T> getAll(Class<T> entity, String namedQuery) {
-        TypedQuery<T> allQuery = em.createNamedQuery(namedQuery, entity);
-        return allQuery.getResultList();
-    }
-    
-    public <T> T getById(Class<T> entity, String namedQuery, int id) {
-        TypedQuery<T> allQuery = em.createNamedQuery(namedQuery, entity);
-        allQuery.setParameter(PARAM1, id);
-        return allQuery.getSingleResult();
+    @Transactional
+    public StudentClub persistStudentClub(StudentClub newStudentClub) {
+        em.persist(newStudentClub);
+        return newStudentClub;
     }
 
-    public <T> T persistEntity(Class<T> entity, T newEntity) {
-        em.persist(newEntity);
-        return newEntity;
+    @Transactional
+    public StudentClub updateStudentClub(int id, StudentClub updatingStudentClub) {
+        StudentClub studentClubToBeUpdated = getStudentClubById(id);
+        if (studentClubToBeUpdated != null) {
+            em.refresh(studentClubToBeUpdated);
+            studentClubToBeUpdated.setName(updatingStudentClub.getName());
+            em.merge(studentClubToBeUpdated);
+            em.flush();
+        }
+        return studentClubToBeUpdated;
     }
 
     @Transactional
     public StudentClub deleteStudentClub(int id) {
         //StudentClub sc = getStudentClubById(id);
-    	StudentClub sc = getById(StudentClub.class, StudentClub.SPECIFIC_STUDENT_CLUB_QUERY_NAME, id);
+        StudentClub sc = getById(StudentClub.class, StudentClub.SPECIFIC_STUDENT_CLUB_QUERY_NAME, id);
         if (sc != null) {
             Set<ClubMembership> memberships = sc.getClubMemberships();
             List<ClubMembership> list = new LinkedList<>();
@@ -226,81 +333,46 @@ public class ACMECollegeService implements Serializable {
         }
         return null;
     }
-    
-    // Please study & use the methods below in your test suites
-    
+
     public boolean isDuplicated(StudentClub newStudentClub) {
         TypedQuery<Long> allStudentClubsQuery = em.createNamedQuery(IS_DUPLICATE_QUERY_NAME, Long.class);
         allStudentClubsQuery.setParameter(PARAM1, newStudentClub.getName());
         return (allStudentClubsQuery.getSingleResult() >= 1);
     }
+    ///////////////////////////////////////////////
+    // ----------[ StudentClub | End ]---------- //
+    ///////////////////////////////////////////////
 
-    @Transactional
-    public StudentClub persistStudentClub(StudentClub newStudentClub) {
-        em.persist(newStudentClub);
-        return newStudentClub;
-    }
 
+
+    //////////////////////////////////////////////////
+    // ----------[ Misc Methods | Start ]---------- //
+    //////////////////////////////////////////////////
     @Transactional
-    public StudentClub updateStudentClub(int id, StudentClub updatingStudentClub) {
-    	StudentClub studentClubToBeUpdated = getStudentClubById(id);
-        if (studentClubToBeUpdated != null) {
-            em.refresh(studentClubToBeUpdated);
-            studentClubToBeUpdated.setName(updatingStudentClub.getName());
-            em.merge(studentClubToBeUpdated);
-            em.flush();
+    public Professor setProfessorForStudentCourse(int studentId, int courseId, Professor newProfessor) {
+        Student studentToBeUpdated = em.find(Student.class, studentId);
+        if (studentToBeUpdated != null) { // Student exists
+            Set<CourseRegistration> courseRegistrations = studentToBeUpdated.getCourseRegistrations();
+            courseRegistrations.forEach(c -> {
+                if (c.getCourse().getId() == courseId) {
+                    if (c.getProfessor() != null) { // Professor exists
+                        Professor prof = em.find(Professor.class, c.getProfessor().getId());
+                        prof.setProfessor(newProfessor.getFirstName(),
+                                newProfessor.getLastName(),
+                                newProfessor.getDepartment());
+                        em.merge(prof);
+                    }
+                    else { // Professor does not exist
+                        c.setProfessor(newProfessor);
+                        em.merge(studentToBeUpdated);
+                    }
+                }
+            });
+            return newProfessor;
         }
-        return studentClubToBeUpdated;
+        else return null;  // Student doesn't exists
     }
-    
-    @Transactional
-    public ClubMembership persistClubMembership(ClubMembership newClubMembership) {
-        em.persist(newClubMembership);
-        return newClubMembership;
-    }
-
-    public ClubMembership getClubMembershipById(int cmId) {
-        TypedQuery<ClubMembership> allClubMembershipQuery = em.createNamedQuery(ClubMembership.FIND_BY_ID, ClubMembership.class);
-        allClubMembershipQuery.setParameter(PARAM1, cmId);
-        return allClubMembershipQuery.getSingleResult();
-    }
-
-    @Transactional
-    public ClubMembership updateClubMembership(int id, ClubMembership clubMembershipWithUpdates) {
-    	ClubMembership clubMembershipToBeUpdated = getClubMembershipById(id);
-        if (clubMembershipToBeUpdated != null) {
-            em.refresh(clubMembershipToBeUpdated);
-            em.merge(clubMembershipWithUpdates);
-            em.flush();
-        }
-        return clubMembershipToBeUpdated;
-    }
-
-    @Transactional
-    public void deleteProfessorById(int id) {
-        Professor professor = getById(Professor.class, Professor.GET_PROFESSOR_BY_ID_QUERY_NAME, id);
-        if (professor != null) {
-            em.refresh(professor);
-            em.remove(professor);
-        }
-    }
-
-    @Transactional
-    public void deleteCourseById(int id) {
-        Course course = getById(Course.class, Course.GET_COURSE_BY_ID_QUERY, id);
-        if (course != null) {
-            em.refresh(course);
-            em.remove(course);
-        }
-    }
-
-    @Transactional
-    public void deleteClubMembershipById(int id) {
-        Course course = getById(Course.class, Course.GET_COURSE_BY_ID_QUERY, id);
-        if (course != null) {
-            em.refresh(course);
-            em.remove(course);
-        }
-    }
-    
+    ////////////////////////////////////////////////
+    // ----------[ Misc Methods | End ]---------- //
+    ////////////////////////////////////////////////
 }
