@@ -82,7 +82,7 @@ public class CourseResource {
     public Response deleteCourse(@PathParam(RESOURCE_PATH_ID_ELEMENT) int id) {
         Response response = null;
         service.deleteCourseById(id);
-        response = Response.status(Response.Status.OK).build();
+        response = Response.ok().build();
         return response;
     }
 }

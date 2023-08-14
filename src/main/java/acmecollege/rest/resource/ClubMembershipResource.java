@@ -14,10 +14,10 @@
 package acmecollege.rest.resource;
 
 import acmecollege.ejb.ACMECollegeService;
-import acmecollege.entity.ClubMembership;
-import acmecollege.entity.Course;
-import acmecollege.entity.Student;
-import acmecollege.entity.StudentClub;
+import acmecollege.entity.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -65,12 +65,42 @@ public class ClubMembershipResource {
 
     @POST
     @RolesAllowed({ADMIN_ROLE})
-    public Response addClubMembership(ClubMembership newClubMembership) {
+    @Path("/{membershipCardId}/{studentClubId}")
+    public Response addClubMembership(@PathParam("membershipCardId") int membershipCardId,
+                                      @PathParam("studentClubId") int studentClubId, ClubMembership newClubMembership) throws JsonProcessingException {
         LOG.debug("Adding a new club membership = {}", newClubMembership);
-        Response response = null;
-        ClubMembership newClubMembershipWithIdTimestamps = service.persistClubMembership(newClubMembership);
-        response = Response.ok(newClubMembershipWithIdTimestamps).build();
-        return response;
+        MembershipCard membershipCard;
+        StudentClub studentClub;
+
+        try {
+            membershipCard = service.getById(
+                    MembershipCard.class,
+                    MembershipCard.ID_CARD_QUERY_NAME,
+                    membershipCardId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            HttpErrorResponse err = new HttpErrorResponse(
+                    Response.Status.BAD_REQUEST.getStatusCode(),
+                    String.format("No membership card found with id %d", membershipCardId));
+            return Response.status(Response.Status.BAD_REQUEST).entity(err).build();
+        }
+
+        try {
+            studentClub = service.getById(
+                    StudentClub.class,
+                    StudentClub.SPECIFIC_STUDENT_CLUB_QUERY_NAME,
+                    studentClubId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            HttpErrorResponse err = new HttpErrorResponse(
+                    Response.Status.BAD_REQUEST.getStatusCode(),
+                    String.format("No student club found with id %d", studentClubId));
+            return Response.status(Response.Status.BAD_REQUEST).entity(err).build();
+        }
+
+        service.persistClubMembership(newClubMembership, studentClubId, membershipCardId);
+
+        return Response.ok(newClubMembership).build();
     }
 
     @DELETE

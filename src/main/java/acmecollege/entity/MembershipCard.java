@@ -14,8 +14,10 @@
  */
 package acmecollege.entity;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import acmecollege.rest.serializer.ClubMembershipSerializer;
+import acmecollege.rest.serializer.SecurityRoleSerializer;
+import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import java.io.Serializable;
 
@@ -42,7 +44,7 @@ import javax.persistence.Table;
 @NamedQuery(name = MembershipCard.ALL_CARDS_QUERY_NAME, query = "SELECT mc FROM MembershipCard mc")
 @NamedQuery(name = MembershipCard.ID_CARD_QUERY_NAME, query = "SELECT mc FROM MembershipCard mc where mc.id = :param1")
 @AttributeOverride(name = "id", column = @Column(name = "card_id"))
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class MembershipCard extends PojoBase implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -72,6 +74,7 @@ public class MembershipCard extends PojoBase implements Serializable {
 		this.signed = signed;
 	}
 
+	@JsonSerialize(using = ClubMembershipSerializer.class)
 	public ClubMembership getClubMembership() {
 		return clubMembership;
 	}
@@ -80,6 +83,7 @@ public class MembershipCard extends PojoBase implements Serializable {
 		this.clubMembership = clubMembership;
 	}
 
+//	@JsonBackReference(value = "membershipCard-student-backref")
 	public Student getOwner() {
 		return owner;
 	}

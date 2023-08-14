@@ -29,6 +29,7 @@ import javax.persistence.Table;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 /**
  * The persistent class for the student database table.
@@ -82,6 +83,7 @@ public class Student extends PojoBase implements Serializable {
 
     // Simplify JSON body, skip MembershipCards
     @JsonIgnore
+//	@JsonManagedReference(value = "membershipCard-student-backref")
     public Set<MembershipCard> getMembershipCards() {
 		return membershipCards;
 	}

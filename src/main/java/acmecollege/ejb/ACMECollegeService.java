@@ -15,6 +15,7 @@
 package acmecollege.ejb;
 
 import static acmecollege.entity.CourseRegistration_.professor;
+import static acmecollege.entity.CourseRegistration_.student;
 import static acmecollege.entity.SecurityRole.SECURITY_ROLE_BY_NAME_QUERY_NAME;
 import static acmecollege.entity.SecurityUser.*;
 import static acmecollege.entity.StudentClub.ALL_STUDENT_CLUBS_QUERY_NAME;
@@ -36,6 +37,7 @@ import static acmecollege.utility.MyConstants.PU_NAME;
 import static acmecollege.utility.MyConstants.USER_ROLE;
 
 import java.io.Serializable;
+import java.lang.reflect.Member;
 import java.util.*;
 
 import javax.ejb.Singleton;
@@ -101,8 +103,19 @@ public class ACMECollegeService implements Serializable {
     // ----------[ ClubMembership | Start ]---------- //
     ////////////////////////////////////////////////////
     @Transactional
-    public ClubMembership persistClubMembership(ClubMembership newClubMembership) {
+    public ClubMembership persistClubMembership(ClubMembership newClubMembership, int studentClubId, int membershipCardId) {
+        StudentClub studentClub = getStudentClubById(studentClubId);
+        MembershipCard membershipCard = getById(MembershipCard.class, MembershipCard.ID_CARD_QUERY_NAME, membershipCardId);
+
+        newClubMembership.setStudentClub(studentClub);
+        newClubMembership.setCard(membershipCard);
         em.persist(newClubMembership);
+
+        studentClub.getClubMemberships().add(newClubMembership);
+        membershipCard.setClubMembership(newClubMembership);
+
+        em.merge(studentClub);
+        em.merge(membershipCard);
         return newClubMembership;
     }
 
@@ -125,10 +138,21 @@ public class ACMECollegeService implements Serializable {
     
     @Transactional
     public void deleteClubMembershipById(int id) {
-        Course course = getById(Course.class, Course.GET_COURSE_BY_ID_QUERY, id);
-        if (course != null) {
-            em.refresh(course);
-            em.remove(course);
+        ClubMembership clubMembership = getById(ClubMembership.class, ClubMembership.FIND_BY_ID, id);
+        MembershipCard membershipCard = clubMembership.getCard();
+        StudentClub studentClub = clubMembership.getStudentClub();
+        if (clubMembership != null) {
+            Set<ClubMembership> newMembership = studentClub.getClubMemberships();
+            newMembership.remove(clubMembership);
+            studentClub.setClubMembership(newMembership);
+            em.merge(studentClub);
+
+            membershipCard.setClubMembership(null);
+            em.merge(membershipCard);
+
+            em.remove(clubMembership);
+        } else {
+            LOG.warn("Club membership was null");
         }
     }
     //////////////////////////////////////////////////
@@ -167,7 +191,29 @@ public class ACMECollegeService implements Serializable {
     ////////////////////////////////////////////////////
     // ----------[ MembershipCard | Start ]---------- //
     ////////////////////////////////////////////////////
+    @Transactional
+    public MembershipCard persistMembershipCard(MembershipCard newEntity, int studentId) {
+        Student student = getStudentById(studentId);
 
+        student.getMembershipCards().add(newEntity);
+        newEntity.setOwner(student);
+        em.merge(student);
+        return newEntity;
+    }
+
+    @Transactional
+    public void deleteMembershipCardById(int id) {
+        MembershipCard membershipCard = getById(MembershipCard.class, MembershipCard.ID_CARD_QUERY_NAME, id);
+        if (membershipCard != null) {
+            if (membershipCard.getClubMembership() != null) {
+                deleteClubMembershipById(membershipCard.getClubMembership().getId());
+                em.refresh(membershipCard);
+            }
+
+
+            em.remove(membershipCard);
+        }
+    }
     //////////////////////////////////////////////////
     // ----------[ MembershipCard | End ]---------- //
     //////////////////////////////////////////////////
@@ -279,11 +325,11 @@ public class ACMECollegeService implements Serializable {
     /////////////////////////////////////////////////
     // ----------[ StudentClub | Start ]---------- //
     /////////////////////////////////////////////////
-    public List<StudentClub> getAllStudentClubs() {
+    public StudentClub[] getAllStudentClubs() {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<StudentClub> cq = cb.createQuery(StudentClub.class);
         cq.select(cq.from(StudentClub.class));
-        return em.createQuery(cq).getResultList();
+        return em.createQuery(cq).getResultList().toArray(new StudentClub[0]);
     }
 
     // Why not use the build-in em.find?  The named query SPECIFIC_STUDENT_CLUB_QUERY_NAME

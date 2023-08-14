@@ -84,7 +84,7 @@ public class ProfessorResource {
     public Response deleteProfessor(@PathParam(RESOURCE_PATH_ID_ELEMENT) int id) {
         Response response = null;
         service.deleteProfessorById(id);
-        response = Response.status(Response.Status.OK).build();
+        response = Response.ok().build();
         return response;
     }
 }

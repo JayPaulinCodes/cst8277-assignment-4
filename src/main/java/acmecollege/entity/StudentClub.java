@@ -33,11 +33,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
  * The persistent class for the student_club database table.
@@ -60,6 +57,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 		@Type(value = AcademicStudentClub.class, name = "academic_student_club"),
 		@Type(value = NonAcademicStudentClub.class, name = "non_academic_student_club")
 })
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public abstract class StudentClub extends PojoBase implements Serializable {
 	private static final long serialVersionUID = 1L;
 

@@ -55,15 +55,17 @@ public class StudentClubResource {
     protected SecurityContext sc;
     
     @GET
+    @RolesAllowed({ADMIN_ROLE, USER_ROLE})
     public Response getStudentClubs() {
         LOG.debug("Retrieving all student clubs...");
-        List<StudentClub> studentClubs = service.getAllStudentClubs();
+        StudentClub[] studentClubs = service.getAllStudentClubs();
         LOG.debug("Student clubs found = {}", studentClubs);
         Response response = Response.ok(studentClubs).build();
         return response;
     }
     
     @GET
+    @RolesAllowed({ADMIN_ROLE, USER_ROLE})
     @Path("/{studentClubId}")
     public Response getStudentClubById(@PathParam("studentClubId") int studentClubId) {
         LOG.debug("Retrieving student club with id = {}", studentClubId);

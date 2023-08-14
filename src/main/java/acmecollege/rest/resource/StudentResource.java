@@ -91,6 +91,7 @@ public class StudentResource {
     @POST
     @RolesAllowed({ADMIN_ROLE})
     public Response addStudent(Student newStudent) {
+        LOG.debug("try to add student " + newStudent);
         Response response = null;
         Student newStudentWithIdTimestamps = service.persistStudent(newStudent);
         // Build a SecurityUser linked to the new student
@@ -105,7 +106,7 @@ public class StudentResource {
     public Response deleteStudent(@PathParam(RESOURCE_PATH_ID_ELEMENT) int id) {
         Response response = null;
         service.deleteStudentById(id);
-        response = Response.status(Status.OK).build();
+        response = Response.ok().build();
         return response;
     }
 

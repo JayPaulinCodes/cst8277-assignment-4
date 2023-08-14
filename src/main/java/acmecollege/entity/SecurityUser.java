@@ -39,11 +39,15 @@ import static acmecollege.entity.SecurityUser.*;
 @NamedQuery(
         name = SECURITY_USER_BY_STUDENT_ID_QUERY,
         query = "SELECT u FROM SecurityUser u left join fetch u.student WHERE u.student.id = :param1")
+@NamedQuery(
+        name = IS_DUPLICATE_QUERY_NAME,
+        query = "SELECT count(su) FROM SecurityUser su where su.username = :param1")
 public class SecurityUser implements Serializable, Principal {
     /** Explicit set serialVersionUID */
     private static final long serialVersionUID = 1L;
     public static final String SECURITY_USER_BY_NAME_QUERY = "SecurityUser.userByName";
     public static final String SECURITY_USER_BY_STUDENT_ID_QUERY = "SecurityUser.userByStudentId";
+    public static final String IS_DUPLICATE_QUERY_NAME = "SecurityUser.isDuplicate";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -34,6 +34,7 @@ import javax.ws.rs.core.HttpHeaders;
 @ApplicationScoped
 public class CustomAuthenticationMechanism implements HttpAuthenticationMechanism {
 
+    private static final Logger LOG = LogManager.getLogger();
     @Inject
     protected CustomIdentityStore identityStore;
 
@@ -42,7 +43,8 @@ public class CustomAuthenticationMechanism implements HttpAuthenticationMechanis
 
     @Override
     public AuthenticationStatus validateRequest(HttpServletRequest request, HttpServletResponse response, HttpMessageContext httpMessageContext) throws AuthenticationException {
-
+        LOG.debug("---------------");
+        LOG.debug(String.format("got %s request on URI %s", request.getMethod(), request.getRequestURI()));
         AuthenticationStatus result = httpMessageContext.doNothing();
         //Parse BasicAuth header
         String name = null;

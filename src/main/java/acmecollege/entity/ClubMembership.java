@@ -13,9 +13,12 @@
  */
 package acmecollege.entity;
 
+import acmecollege.rest.serializer.MembershipCardSerializer;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -32,7 +35,7 @@ import javax.persistence.*;
 @NamedQuery(name = ClubMembership.FIND_ALL, query = "SELECT cm FROM ClubMembership cm")
 @NamedQuery( name = ClubMembership.FIND_BY_ID, query = "SELECT cm FROM ClubMembership cm where cm.id = :param1")
 @AttributeOverride(name = "id", column = @Column(name = "membership_id"))
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ClubMembership extends PojoBase implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -62,6 +65,7 @@ public class ClubMembership extends PojoBase implements Serializable {
 		this.club = club;
 	}
 
+	@JsonSerialize(using = MembershipCardSerializer.class)
 	public MembershipCard getCard() {
 		return card;
 	}
