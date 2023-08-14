@@ -67,7 +67,7 @@ public class ClubMembershipResource {
     @RolesAllowed({ADMIN_ROLE})
     @Path("/{membershipCardId}/{studentClubId}")
     public Response addClubMembership(@PathParam("membershipCardId") int membershipCardId,
-                                      @PathParam("studentClubId") int studentClubId, ClubMembership newClubMembership) throws JsonProcessingException {
+                                      @PathParam("studentClubId") int studentClubId, ClubMembership newClubMembership) {
         LOG.debug("Adding a new club membership = {}", newClubMembership);
         MembershipCard membershipCard;
         StudentClub studentClub;

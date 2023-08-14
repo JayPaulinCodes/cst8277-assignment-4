@@ -14,6 +14,7 @@
 package acmecollege.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.*;
@@ -136,7 +137,8 @@ public class Course extends PojoBase implements Serializable {
 		this.online = online;
 	}
 
-	@JsonManagedReference(value = "courseRegistration-course-backref")
+//	@JsonManagedReference(value = "courseRegistration-course-backref")
+	@JsonIgnore
 	public Set<CourseRegistration> getCourseRegistrations() {
 		return courseRegistrations;
 	}

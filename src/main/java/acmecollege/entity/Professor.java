@@ -14,6 +14,7 @@
 package acmecollege.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import java.io.Serializable;
@@ -150,7 +151,8 @@ public class Professor extends PojoBase implements Serializable {
 		this.specialization = specialization;
 	}
 
-	@JsonManagedReference(value = "courseRegistration-professor-backref")
+//	@JsonManagedReference(value = "courseRegistration-professor-backref")
+	@JsonIgnore
 	public Set<CourseRegistration> getCourseRegistrations() {
 		return courseRegistrations;
 	}

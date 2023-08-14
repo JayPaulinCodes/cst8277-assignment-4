@@ -181,7 +181,64 @@ public class ACMECollegeService implements Serializable {
     ////////////////////////////////////////////////////////
     // ----------[ CourseRegistration | Start ]---------- //
     ////////////////////////////////////////////////////////
+    @Transactional
+    public CourseRegistration getCourseRegistrationById(int studentId, int courseId) {
+        TypedQuery<CourseRegistration> query = em.createNamedQuery(CourseRegistration.FIND_BY_ID, CourseRegistration.class);
+        query.setParameter(PARAM1, studentId);
+        query.setParameter("param2", courseId);
+        return query.getSingleResult();
+    }
 
+    @Transactional
+    public CourseRegistration persistCourseRegistration(CourseRegistration newCourseRegistration, int studentId, int courseId) {
+        Student student = getStudentById(studentId);
+        Course course = getById(Course.class, Course.GET_COURSE_BY_ID_QUERY, courseId);
+
+        newCourseRegistration.setCourse(course);
+        newCourseRegistration.setStudent(student);
+        em.persist(newCourseRegistration);
+
+        return newCourseRegistration;
+    }
+
+    @Transactional
+    public CourseRegistration persistCourseRegistration(CourseRegistration newCourseRegistration, int studentId, int courseId, int professorId) {
+        Student student = getStudentById(studentId);
+        Course course = getById(Course.class, Course.GET_COURSE_BY_ID_QUERY, courseId);
+        Professor professor = getById(Professor.class, Professor.GET_PROFESSOR_BY_ID_QUERY_NAME, professorId);
+
+        newCourseRegistration.setCourse(course);
+        newCourseRegistration.setStudent(student);
+        newCourseRegistration.setProfessor(professor);
+        em.persist(newCourseRegistration);
+
+        return newCourseRegistration;
+    }
+
+    @Transactional
+    public void deleteCourseRegistration(int studentId, int courseId) {
+        CourseRegistration courseRegistration = getCourseRegistrationById(studentId, courseId);
+        Student student = courseRegistration.getStudent();
+        Course course = courseRegistration.getCourse();
+        Professor professor = courseRegistration.getProfessor();
+
+        if (courseRegistration != null) {
+            if (professor != null) {
+                professor.getCourseRegistrations().remove(courseRegistration);
+                em.merge(professor);
+            }
+
+            student.getCourseRegistrations().remove(courseRegistration);
+            em.merge(student);
+
+            course.getCourseRegistrations().remove(courseRegistration);
+            em.merge(course);
+
+            em.remove(courseRegistration);
+        } else {
+            LOG.warn("Course registration was null");
+        }
+    }
     //////////////////////////////////////////////////////
     // ----------[ CourseRegistration | End ]---------- //
     //////////////////////////////////////////////////////

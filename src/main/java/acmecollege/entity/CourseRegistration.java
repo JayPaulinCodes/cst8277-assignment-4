@@ -14,7 +14,11 @@
  */
 package acmecollege.entity;
 
+import acmecollege.rest.serializer.CourseSerializer;
+import acmecollege.rest.serializer.ProfessorSerializer;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -40,9 +44,12 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "course_registration")
 @Access(AccessType.FIELD)
-@NamedQuery(name = "CourseRegistration.findAll", query = "SELECT cr FROM CourseRegistration cr")
+@NamedQuery(name = CourseRegistration.FIND_ALL, query = "SELECT cr FROM CourseRegistration cr")
+@NamedQuery(name = CourseRegistration.FIND_BY_ID, query = "SELECT cr FROM CourseRegistration cr WHERE cr.id.studentId = :param1 AND cr.id.courseId = :param2")
 public class CourseRegistration extends PojoBaseCompositeKey<CourseRegistrationPK> implements Serializable {
 	private static final long serialVersionUID = 1L;
+	public static final String FIND_ALL = "CourseRegistration.findAll";
+	public static final String FIND_BY_ID = "CourseRegistration.findbyId";
 
 	// Hint - What annotation is used for a composite primary key type?
 	@EmbeddedId
@@ -93,7 +100,9 @@ public class CourseRegistration extends PojoBaseCompositeKey<CourseRegistrationP
 		this.student = student;
 	}
 
-	@JsonBackReference(value = "courseRegistration-course-backref")
+//	@JsonBackReference(value = "courseRegistration-course-backref")
+//	@JsonSerialize(using = CourseSerializer.class)
+	@JsonIgnore
 	public Course getCourse() {
 		return course;
 	}
@@ -103,7 +112,9 @@ public class CourseRegistration extends PojoBaseCompositeKey<CourseRegistrationP
 		this.course = course;
 	}
 
-	@JsonBackReference(value = "courseRegistration-professor-backref")
+//	@JsonBackReference(value = "courseRegistration-professor-backref")
+//	@JsonSerialize(using = ProfessorSerializer.class)
+	@JsonIgnore
 	public Professor getProfessor() {
 		return professor;
 	}

@@ -30,6 +30,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
 import acmecollege.entity.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.client.ClientConfig;
@@ -1110,4 +1111,240 @@ public class TestACMECollegeSystem {
     // ----------[ ClubMembership | End ]---------- //
     //////////////////////////////////////////////////
 
+
+
+    ////////////////////////////////////////////////////////
+    // ----------[ CourseRegistration | Start ]---------- //
+    ////////////////////////////////////////////////////////
+    @Test
+    public void test55_get_all_course_registrations_admin() {
+        Response response = webTarget
+                //.register(userAuth)
+                .register(adminAuth)
+                .path(COURSE_REGISTRATION_RESOURCE_NAME)
+                .request()
+                .get();
+        assertThat(response.getStatus(), is(200));
+        System.out.println("Status: " + response.getStatus() + " (" + response.getStatusInfo() + ")");
+        List<CourseRegistration> results = response.readEntity(new GenericType<List<CourseRegistration>>(){});
+        assertThat(results, is(not(empty())));
+        assertThat(results, hasSize(2));
+    }
+
+    @Test
+    public void test56_get_all_course_registrations_user() {
+        Response response = webTarget
+                .register(userAuth)
+//                .register(adminAuth)
+                .path(COURSE_REGISTRATION_RESOURCE_NAME)
+                .request()
+                .get();
+        assertThat(response.getStatus(), is(403));
+        System.out.println("Status: " + response.getStatus() + " (" + response.getStatusInfo() + ")");
+    }
+
+    @Test
+    public void test57_get_course_registrations_by_id_admin() {
+        Response response = webTarget
+                //.register(userAuth)
+                .register(adminAuth)
+                .path(COURSE_REGISTRATION_RESOURCE_NAME+"/1/1")
+                .request()
+                .get();
+        assertThat(response.getStatus(), is(200));
+        System.out.println("Status: " + response.getStatus() + " (" + response.getStatusInfo() + ")");
+        CourseRegistration results = response.readEntity(new GenericType<CourseRegistration>(){});
+        assertThat(results, is(not(results.getStudent() == null)));
+        assertThat(results, is(not(results.getCourse() == null)));
+    }
+
+    @Test
+    public void test58_get_course_registrations_by_id_user() {
+        Response response = webTarget
+                .register(userAuth)
+//                .register(adminAuth)
+                .path(COURSE_REGISTRATION_RESOURCE_NAME+"/1/1")
+                .request()
+                .get();
+        assertThat(response.getStatus(), is(403));
+        System.out.println("Status: " + response.getStatus() + " (" + response.getStatusInfo() + ")");
+    }
+/**
+//    @Test
+    public void test59_post_new_course_registration_admin() {
+        // Create dummy course for test sake
+        Course dummyCourse = new Course();
+        dummyCourse.setCourseCode("CST8101");
+        dummyCourse.setCourseTitle("Computer Essentials");
+        dummyCourse.setYear(2022);
+        dummyCourse.setSemester("WINTER");
+        dummyCourse.setCreditUnits(3);
+        dummyCourse.setOnline((byte) 0);
+        newTarget().register(adminAuth).path(COURSE_RESOURCE_NAME).request().post(Entity.json(dummyCourse));
+
+//        int sizeBefore = getSize(CourseRegistration.class, COURSE_REGISTRATION_RESOURCE_NAME);
+
+        CourseRegistration newData = new CourseRegistration();
+        newData.setNumericGrade(100);
+        newData.setLetterGrade("A+");
+
+        try {
+            System.out.println((new ObjectMapper()).writeValueAsString(newData));
+        } catch (Exception e) {}
+
+
+        try (Response response = webTarget
+//                .register(userAuth)
+                .register(adminAuth)
+                .path(COURSE_REGISTRATION_RESOURCE_NAME+"/1/4")
+                .request()
+                .post(Entity.json(newData))) {
+//                .post(Entity.json(null))) {
+            System.out.println("Response Headers: " + response.getStringHeaders());
+            System.out.println("Request Body: " + Entity.json(response.getEntity()));
+            System.out.println("Response Body: " + Entity.json(newData));
+            System.out.println("Response Body: " + Entity.json(response));
+            System.out.println("Status: " + response.getStatus() + " (" + response.getStatusInfo() + ") " + response.getEntity());
+            assertThat(response.getStatus(), is(200));
+        }
+
+//        int sizeAfter = getSize(CourseRegistration.class, COURSE_REGISTRATION_RESOURCE_NAME);
+//        assertThat(sizeAfter, is(sizeBefore + 1));
+    }
+
+//    @Test
+    public void test60_post_new_course_registration_with_professor_admin() {
+        // Create dummy course for test sake
+        Course dummyCourse = new Course();
+        dummyCourse.setCourseCode("CST8101");
+        dummyCourse.setCourseTitle("Computer Essentials 2.0");
+        dummyCourse.setYear(2022);
+        dummyCourse.setSemester("WINTER");
+        dummyCourse.setCreditUnits(3);
+        dummyCourse.setOnline((byte) 0);
+        newTarget().register(adminAuth).path(COURSE_RESOURCE_NAME).request().post(Entity.json(dummyCourse));
+
+        int sizeBefore = getSize(CourseRegistration.class, COURSE_REGISTRATION_RESOURCE_NAME);
+
+        CourseRegistration newData = new CourseRegistration();
+        newData.setNumericGrade(100);
+        newData.setLetterGrade("A+");
+
+        try (Response response = webTarget
+//                .register(userAuth)
+                .register(adminAuth)
+                .path(COURSE_REGISTRATION_RESOURCE_NAME+"/1/5/1")
+                .request()
+                .post(Entity.json(newData))) {
+            System.out.println("Status: " + response.getStatus() + " (" + response.getStatusInfo() + ") " + response.getStatusInfo());
+            assertThat(response.getStatus(), is(200));
+        }
+
+        int sizeAfter = getSize(CourseRegistration.class, COURSE_REGISTRATION_RESOURCE_NAME);
+        assertThat(sizeAfter, is(sizeBefore + 1));
+    }
+
+//    @Test
+    public void test61_post_new_course_registration_user() {
+        // Create dummy course for test sake
+        Course dummyCourse = new Course();
+        dummyCourse.setCourseCode("CST8101");
+        dummyCourse.setCourseTitle("Computer Essentials 2.1");
+        dummyCourse.setYear(2022);
+        dummyCourse.setSemester("WINTER");
+        dummyCourse.setCreditUnits(3);
+        dummyCourse.setOnline((byte) 0);
+        newTarget().register(adminAuth).path(COURSE_RESOURCE_NAME).request().post(Entity.json(dummyCourse));
+
+        int sizeBefore = getSize(CourseRegistration.class, COURSE_REGISTRATION_RESOURCE_NAME);
+
+        CourseRegistration newData = new CourseRegistration();
+        newData.setNumericGrade(100);
+        newData.setLetterGrade("A+");
+
+        try (Response response = webTarget
+//                .register(userAuth)
+                .register(adminAuth)
+                .path(COURSE_REGISTRATION_RESOURCE_NAME+"/1/6")
+                .request()
+                .post(Entity.json(newData))) {
+            System.out.println("Status: " + response.getStatus() + " (" + response.getStatusInfo() + ") " + response.getStatusInfo());
+            assertThat(response.getStatus(), is(403));
+        }
+
+        int sizeAfter = getSize(CourseRegistration.class, COURSE_REGISTRATION_RESOURCE_NAME);
+        assertThat(sizeAfter, is(sizeBefore));
+    }
+
+//    @Test
+    public void test62_post_new_course_registration_with_professor_user() {
+        // Create dummy course for test sake
+        Course dummyCourse = new Course();
+        dummyCourse.setCourseCode("CST8101");
+        dummyCourse.setCourseTitle("Computer Essentials 2.2");
+        dummyCourse.setYear(2022);
+        dummyCourse.setSemester("WINTER");
+        dummyCourse.setCreditUnits(3);
+        dummyCourse.setOnline((byte) 0);
+        newTarget().register(adminAuth).path(COURSE_RESOURCE_NAME).request().post(Entity.json(dummyCourse));
+
+        int sizeBefore = getSize(CourseRegistration.class, COURSE_REGISTRATION_RESOURCE_NAME);
+
+        CourseRegistration newData = new CourseRegistration();
+        newData.setNumericGrade(100);
+        newData.setLetterGrade("A+");
+
+        try (Response response = webTarget
+//                .register(userAuth)
+                .register(adminAuth)
+                .path(COURSE_REGISTRATION_RESOURCE_NAME+"/1/7/1")
+                .request()
+                .post(Entity.json(newData))) {
+            System.out.println("Status: " + response.getStatus() + " (" + response.getStatusInfo() + ") " + response.getStatusInfo());
+            assertThat(response.getStatus(), is(403));
+        }
+
+        int sizeAfter = getSize(CourseRegistration.class, COURSE_REGISTRATION_RESOURCE_NAME);
+        assertThat(sizeAfter, is(sizeBefore));
+    }
+
+//    @Test
+    public void test63_delete_course_registration_by_id_admin() {
+        int sizeBefore = getSize(CourseRegistration.class, COURSE_REGISTRATION_RESOURCE_NAME);
+
+        try (Response response = webTarget
+//                .register(userAuth)
+                .register(adminAuth)
+                .path(COURSE_REGISTRATION_RESOURCE_NAME+"/1/3")
+                .request()
+                .delete()) {
+            System.out.println("Status: " + response.getStatus() + " (" + response.getStatusInfo() + ") " + response.getStatusInfo());
+            assertThat(response.getStatus(), is(200));
+        }
+
+        int sizeAfter = getSize(CourseRegistration.class, COURSE_REGISTRATION_RESOURCE_NAME);
+        assertThat(sizeAfter, is(sizeBefore - 1));
+    }
+
+//    @Test
+    public void test64_delete_course_registration_by_id_user() {
+        int sizeBefore = getSize(CourseRegistration.class, COURSE_REGISTRATION_RESOURCE_NAME);
+
+        try (Response response = webTarget
+                .register(userAuth)
+//                .register(adminAuth)
+                .path(COURSE_REGISTRATION_RESOURCE_NAME+"/1/3")
+                .request()
+                .delete()) {
+            System.out.println("Status: " + response.getStatus() + " (" + response.getStatusInfo() + ") " + response.getStatusInfo());
+            assertThat(response.getStatus(), is(403));
+        }
+
+        int sizeAfter = getSize(CourseRegistration.class, COURSE_REGISTRATION_RESOURCE_NAME);
+        assertThat(sizeAfter, is(sizeBefore));
+    }
+ */
+    //////////////////////////////////////////////////////
+    // ----------[ CourseRegistration | End ]---------- //
+    //////////////////////////////////////////////////////
 }
